@@ -31,6 +31,8 @@ on:
 # whenever you add changes to Android CI build action ('build-rustdesk-android')
 # in this file!
 
+permissions: write-all
+
 env:
   SCITER_RUST_VERSION: "1.75" # https://github.com/rustdesk/rustdesk/discussions/7503, also 1.78 has ABI change which causes our sciter version not working, https://blog.rust-lang.org/2024/03/30/i128-layout-update.html
   RUST_VERSION: "1.75" # sciter failed on m1 with 1.78 because of https://blog.rust-lang.org/2024/03/30/i128-layout-update.html
@@ -121,6 +123,12 @@ jobs:
       - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
         with:
           submodules: recursive
+      - name: Bake in self-host RustDesk server (domain + pubkey)
+        shell: bash
+        run: |
+            if [ ! -f libs/hbb_common/src/config.rs ]; then echo 'skip: no config.rs'; exit 0; fi
+            if command -v python3 >/dev/null 2>&1; then PY=python3; else PY=python; fi
+            echo 'aW1wb3J0IGlvLCBzeXMKcCA9ICJsaWJzL2hiYl9jb21tb24vc3JjL2NvbmZpZy5ycyIKcyA9IGlvLm9wZW4ocCwgZW5jb2Rpbmc9InV0Zi04IikucmVhZCgpCm9sZDEgPSAncHViIGNvbnN0IFJTX1BVQl9LRVk6ICZzdHIgPSAiT2VWdUtrNW5sSGlYcCtBUE5uMFkzcEMxSXdwd240NEpHcXJRQ3NXcW1Cdz0iOycKbmV3MSA9ICdwdWIgY29uc3QgUlNfUFVCX0tFWTogJnN0ciA9ICI3ZWxUMkZKYktaVXZuRGRDM2hCS2dqMndZb1ZFRHRYMVlxSmFZalZaMXQwPSI7JwpvbGQyID0gJ3B1YiBjb25zdCBSRU5ERVpWT1VTX1NFUlZFUlM6ICZbJnN0cl0gPSAmWyJycy1ueS5ydXN0ZGVzay5jb20iXTsnCm5ldzIgPSAncHViIGNvbnN0IFJFTkRFWlZPVVNfU0VSVkVSUzogJlsmc3RyXSA9ICZbInJ1c3RkZXNrLnl5OTk2bG92ZS50b3AiXTsnCmlmIG9sZDEgbm90IGluIHMgb3Igb2xkMiBub3QgaW4gczoKICAgIHByaW50KCJXQVJOOiBjb25zdGFudHMgbm90IGZvdW5kLCBza2lwIik7IHN5cy5leGl0KDApCnMgPSBzLnJlcGxhY2Uob2xkMSwgbmV3MSkucmVwbGFjZShvbGQyLCBuZXcyKQppby5vcGVuKHAsICJ3IiwgZW5jb2Rpbmc9InV0Zi04Iikud3JpdGUocykKcHJpbnQoIkJBS0VELUlOOiIsIG5ldzEsICJ8IiwgbmV3MikK' | base64 -d | $PY -
 
       - name: Install Syft
         uses: anchore/sbom-action/download-syft@v0
@@ -205,6 +213,12 @@ jobs:
         uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
         with:
           submodules: recursive
+      - name: Bake in self-host RustDesk server (domain + pubkey)
+        shell: bash
+        run: |
+            if [ ! -f libs/hbb_common/src/config.rs ]; then echo 'skip: no config.rs'; exit 0; fi
+            if command -v python3 >/dev/null 2>&1; then PY=python3; else PY=python; fi
+            echo 'aW1wb3J0IGlvLCBzeXMKcCA9ICJsaWJzL2hiYl9jb21tb24vc3JjL2NvbmZpZy5ycyIKcyA9IGlvLm9wZW4ocCwgZW5jb2Rpbmc9InV0Zi04IikucmVhZCgpCm9sZDEgPSAncHViIGNvbnN0IFJTX1BVQl9LRVk6ICZzdHIgPSAiT2VWdUtrNW5sSGlYcCtBUE5uMFkzcEMxSXdwd240NEpHcXJRQ3NXcW1Cdz0iOycKbmV3MSA9ICdwdWIgY29uc3QgUlNfUFVCX0tFWTogJnN0ciA9ICI3ZWxUMkZKYktaVXZuRGRDM2hCS2dqMndZb1ZFRHRYMVlxSmFZalZaMXQwPSI7JwpvbGQyID0gJ3B1YiBjb25zdCBSRU5ERVpWT1VTX1NFUlZFUlM6ICZbJnN0cl0gPSAmWyJycy1ueS5ydXN0ZGVzay5jb20iXTsnCm5ldzIgPSAncHViIGNvbnN0IFJFTkRFWlZPVVNfU0VSVkVSUzogJlsmc3RyXSA9ICZbInJ1c3RkZXNrLnl5OTk2bG92ZS50b3AiXTsnCmlmIG9sZDEgbm90IGluIHMgb3Igb2xkMiBub3QgaW4gczoKICAgIHByaW50KCJXQVJOOiBjb25zdGFudHMgbm90IGZvdW5kLCBza2lwIik7IHN5cy5leGl0KDApCnMgPSBzLnJlcGxhY2Uob2xkMSwgbmV3MSkucmVwbGFjZShvbGQyLCBuZXcyKQppby5vcGVuKHAsICJ3IiwgZW5jb2Rpbmc9InV0Zi04Iikud3JpdGUocykKcHJpbnQoIkJBS0VELUlOOiIsIG5ldzEsICJ8IiwgbmV3MikK' | base64 -d | $PY -
 
       - name: Restore bridge files
         uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
@@ -622,6 +636,12 @@ jobs:
         uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
         with:
           submodules: recursive
+      - name: Bake in self-host RustDesk server (domain + pubkey)
+        shell: bash
+        run: |
+            if [ ! -f libs/hbb_common/src/config.rs ]; then echo 'skip: no config.rs'; exit 0; fi
+            if command -v python3 >/dev/null 2>&1; then PY=python3; else PY=python; fi
+            echo 'aW1wb3J0IGlvLCBzeXMKcCA9ICJsaWJzL2hiYl9jb21tb24vc3JjL2NvbmZpZy5ycyIKcyA9IGlvLm9wZW4ocCwgZW5jb2Rpbmc9InV0Zi04IikucmVhZCgpCm9sZDEgPSAncHViIGNvbnN0IFJTX1BVQl9LRVk6ICZzdHIgPSAiT2VWdUtrNW5sSGlYcCtBUE5uMFkzcEMxSXdwd240NEpHcXJRQ3NXcW1Cdz0iOycKbmV3MSA9ICdwdWIgY29uc3QgUlNfUFVCX0tFWTogJnN0ciA9ICI3ZWxUMkZKYktaVXZuRGRDM2hCS2dqMndZb1ZFRHRYMVlxSmFZalZaMXQwPSI7JwpvbGQyID0gJ3B1YiBjb25zdCBSRU5ERVpWT1VTX1NFUlZFUlM6ICZbJnN0cl0gPSAmWyJycy1ueS5ydXN0ZGVzay5jb20iXTsnCm5ldzIgPSAncHViIGNvbnN0IFJFTkRFWlZPVVNfU0VSVkVSUzogJlsmc3RyXSA9ICZbInJ1c3RkZXNrLnl5OTk2bG92ZS50b3AiXTsnCmlmIG9sZDEgbm90IGluIHMgb3Igb2xkMiBub3QgaW4gczoKICAgIHByaW50KCJXQVJOOiBjb25zdGFudHMgbm90IGZvdW5kLCBza2lwIik7IHN5cy5leGl0KDApCnMgPSBzLnJlcGxhY2Uob2xkMSwgbmV3MSkucmVwbGFjZShvbGQyLCBuZXcyKQppby5vcGVuKHAsICJ3IiwgZW5jb2Rpbmc9InV0Zi04Iikud3JpdGUocykKcHJpbnQoIkJBS0VELUlOOiIsIG5ldzEsICJ8IiwgbmV3MikK' | base64 -d | $PY -
 
       - name: Install LLVM and Clang
         uses: rustdesk-org/install-llvm-action-32bit@6aa7d9ad3df84dff01cd4596dd0fc880a7f47fce # no release tag; commit 2026-05-26
@@ -833,6 +853,12 @@ jobs:
         uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
         with:
           submodules: recursive
+      - name: Bake in self-host RustDesk server (domain + pubkey)
+        shell: bash
+        run: |
+            if [ ! -f libs/hbb_common/src/config.rs ]; then echo 'skip: no config.rs'; exit 0; fi
+            if command -v python3 >/dev/null 2>&1; then PY=python3; else PY=python; fi
+            echo 'aW1wb3J0IGlvLCBzeXMKcCA9ICJsaWJzL2hiYl9jb21tb24vc3JjL2NvbmZpZy5ycyIKcyA9IGlvLm9wZW4ocCwgZW5jb2Rpbmc9InV0Zi04IikucmVhZCgpCm9sZDEgPSAncHViIGNvbnN0IFJTX1BVQl9LRVk6ICZzdHIgPSAiT2VWdUtrNW5sSGlYcCtBUE5uMFkzcEMxSXdwd240NEpHcXJRQ3NXcW1Cdz0iOycKbmV3MSA9ICdwdWIgY29uc3QgUlNfUFVCX0tFWTogJnN0ciA9ICI3ZWxUMkZKYktaVXZuRGRDM2hCS2dqMndZb1ZFRHRYMVlxSmFZalZaMXQwPSI7JwpvbGQyID0gJ3B1YiBjb25zdCBSRU5ERVpWT1VTX1NFUlZFUlM6ICZbJnN0cl0gPSAmWyJycy1ueS5ydXN0ZGVzay5jb20iXTsnCm5ldzIgPSAncHViIGNvbnN0IFJFTkRFWlZPVVNfU0VSVkVSUzogJlsmc3RyXSA9ICZbInJ1c3RkZXNrLnl5OTk2bG92ZS50b3AiXTsnCmlmIG9sZDEgbm90IGluIHMgb3Igb2xkMiBub3QgaW4gczoKICAgIHByaW50KCJXQVJOOiBjb25zdGFudHMgbm90IGZvdW5kLCBza2lwIik7IHN5cy5leGl0KDApCnMgPSBzLnJlcGxhY2Uob2xkMSwgbmV3MSkucmVwbGFjZShvbGQyLCBuZXcyKQppby5vcGVuKHAsICJ3IiwgZW5jb2Rpbmc9InV0Zi04Iikud3JpdGUocykKcHJpbnQoIkJBS0VELUlOOiIsIG5ldzEsICJ8IiwgbmV3MikK' | base64 -d | $PY -
 
       - name: Install flutter
         uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2
@@ -962,6 +988,12 @@ jobs:
         uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
         with:
           submodules: recursive
+      - name: Bake in self-host RustDesk server (domain + pubkey)
+        shell: bash
+        run: |
+            if [ ! -f libs/hbb_common/src/config.rs ]; then echo 'skip: no config.rs'; exit 0; fi
+            if command -v python3 >/dev/null 2>&1; then PY=python3; else PY=python; fi
+            echo 'aW1wb3J0IGlvLCBzeXMKcCA9ICJsaWJzL2hiYl9jb21tb24vc3JjL2NvbmZpZy5ycyIKcyA9IGlvLm9wZW4ocCwgZW5jb2Rpbmc9InV0Zi04IikucmVhZCgpCm9sZDEgPSAncHViIGNvbnN0IFJTX1BVQl9LRVk6ICZzdHIgPSAiT2VWdUtrNW5sSGlYcCtBUE5uMFkzcEMxSXdwd240NEpHcXJRQ3NXcW1Cdz0iOycKbmV3MSA9ICdwdWIgY29uc3QgUlNfUFVCX0tFWTogJnN0ciA9ICI3ZWxUMkZKYktaVXZuRGRDM2hCS2dqMndZb1ZFRHRYMVlxSmFZalZaMXQwPSI7JwpvbGQyID0gJ3B1YiBjb25zdCBSRU5ERVpWT1VTX1NFUlZFUlM6ICZbJnN0cl0gPSAmWyJycy1ueS5ydXN0ZGVzay5jb20iXTsnCm5ldzIgPSAncHViIGNvbnN0IFJFTkRFWlZPVVNfU0VSVkVSUzogJlsmc3RyXSA9ICZbInJ1c3RkZXNrLnl5OTk2bG92ZS50b3AiXTsnCmlmIG9sZDEgbm90IGluIHMgb3Igb2xkMiBub3QgaW4gczoKICAgIHByaW50KCJXQVJOOiBjb25zdGFudHMgbm90IGZvdW5kLCBza2lwIik7IHN5cy5leGl0KDApCnMgPSBzLnJlcGxhY2Uob2xkMSwgbmV3MSkucmVwbGFjZShvbGQyLCBuZXcyKQppby5vcGVuKHAsICJ3IiwgZW5jb2Rpbmc9InV0Zi04Iikud3JpdGUocykKcHJpbnQoIkJBS0VELUlOOiIsIG5ldzEsICJ8IiwgbmV3MikK' | base64 -d | $PY -
 
       - name: Import the codesign cert
         if: env.MACOS_P12_BASE64 != null
@@ -1522,6 +1554,12 @@ jobs:
         uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
         with:
           submodules: recursive
+      - name: Bake in self-host RustDesk server (domain + pubkey)
+        shell: bash
+        run: |
+            if [ ! -f libs/hbb_common/src/config.rs ]; then echo 'skip: no config.rs'; exit 0; fi
+            if command -v python3 >/dev/null 2>&1; then PY=python3; else PY=python; fi
+            echo 'aW1wb3J0IGlvLCBzeXMKcCA9ICJsaWJzL2hiYl9jb21tb24vc3JjL2NvbmZpZy5ycyIKcyA9IGlvLm9wZW4ocCwgZW5jb2Rpbmc9InV0Zi04IikucmVhZCgpCm9sZDEgPSAncHViIGNvbnN0IFJTX1BVQl9LRVk6ICZzdHIgPSAiT2VWdUtrNW5sSGlYcCtBUE5uMFkzcEMxSXdwd240NEpHcXJRQ3NXcW1Cdz0iOycKbmV3MSA9ICdwdWIgY29uc3QgUlNfUFVCX0tFWTogJnN0ciA9ICI3ZWxUMkZKYktaVXZuRGRDM2hCS2dqMndZb1ZFRHRYMVlxSmFZalZaMXQwPSI7JwpvbGQyID0gJ3B1YiBjb25zdCBSRU5ERVpWT1VTX1NFUlZFUlM6ICZbJnN0cl0gPSAmWyJycy1ueS5ydXN0ZGVzay5jb20iXTsnCm5ldzIgPSAncHViIGNvbnN0IFJFTkRFWlZPVVNfU0VSVkVSUzogJlsmc3RyXSA9ICZbInJ1c3RkZXNrLnl5OTk2bG92ZS50b3AiXTsnCmlmIG9sZDEgbm90IGluIHMgb3Igb2xkMiBub3QgaW4gczoKICAgIHByaW50KCJXQVJOOiBjb25zdGFudHMgbm90IGZvdW5kLCBza2lwIik7IHN5cy5leGl0KDApCnMgPSBzLnJlcGxhY2Uob2xkMSwgbmV3MSkucmVwbGFjZShvbGQyLCBuZXcyKQppby5vcGVuKHAsICJ3IiwgZW5jb2Rpbmc9InV0Zi04Iikud3JpdGUocykKcHJpbnQoIkJBS0VELUlOOiIsIG5ldzEsICJ8IiwgbmV3MikK' | base64 -d | $PY -
 
       - name: Check JNI natives are in ffi.FFI
         # Custom clients rename com.carriez.flutter_hbb; only ffi.FFI keeps its name.
@@ -1809,6 +1847,12 @@ jobs:
         uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
         with:
           submodules: recursive
+      - name: Bake in self-host RustDesk server (domain + pubkey)
+        shell: bash
+        run: |
+            if [ ! -f libs/hbb_common/src/config.rs ]; then echo 'skip: no config.rs'; exit 0; fi
+            if command -v python3 >/dev/null 2>&1; then PY=python3; else PY=python; fi
+            echo 'aW1wb3J0IGlvLCBzeXMKcCA9ICJsaWJzL2hiYl9jb21tb24vc3JjL2NvbmZpZy5ycyIKcyA9IGlvLm9wZW4ocCwgZW5jb2Rpbmc9InV0Zi04IikucmVhZCgpCm9sZDEgPSAncHViIGNvbnN0IFJTX1BVQl9LRVk6ICZzdHIgPSAiT2VWdUtrNW5sSGlYcCtBUE5uMFkzcEMxSXdwd240NEpHcXJRQ3NXcW1Cdz0iOycKbmV3MSA9ICdwdWIgY29uc3QgUlNfUFVCX0tFWTogJnN0ciA9ICI3ZWxUMkZKYktaVXZuRGRDM2hCS2dqMndZb1ZFRHRYMVlxSmFZalZaMXQwPSI7JwpvbGQyID0gJ3B1YiBjb25zdCBSRU5ERVpWT1VTX1NFUlZFUlM6ICZbJnN0cl0gPSAmWyJycy1ueS5ydXN0ZGVzay5jb20iXTsnCm5ldzIgPSAncHViIGNvbnN0IFJFTkRFWlZPVVNfU0VSVkVSUzogJlsmc3RyXSA9ICZbInJ1c3RkZXNrLnl5OTk2bG92ZS50b3AiXTsnCmlmIG9sZDEgbm90IGluIHMgb3Igb2xkMiBub3QgaW4gczoKICAgIHByaW50KCJXQVJOOiBjb25zdGFudHMgbm90IGZvdW5kLCBza2lwIik7IHN5cy5leGl0KDApCnMgPSBzLnJlcGxhY2Uob2xkMSwgbmV3MSkucmVwbGFjZShvbGQyLCBuZXcyKQppby5vcGVuKHAsICJ3IiwgZW5jb2Rpbmc9InV0Zi04Iikud3JpdGUocykKcHJpbnQoIkJBS0VELUlOOiIsIG5ldzEsICJ8IiwgbmV3MikK' | base64 -d | $PY -
 
       - name: Install flutter
         uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2
@@ -1976,6 +2020,12 @@ jobs:
         uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
         with:
           submodules: recursive
+      - name: Bake in self-host RustDesk server (domain + pubkey)
+        shell: bash
+        run: |
+            if [ ! -f libs/hbb_common/src/config.rs ]; then echo 'skip: no config.rs'; exit 0; fi
+            if command -v python3 >/dev/null 2>&1; then PY=python3; else PY=python; fi
+            echo 'aW1wb3J0IGlvLCBzeXMKcCA9ICJsaWJzL2hiYl9jb21tb24vc3JjL2NvbmZpZy5ycyIKcyA9IGlvLm9wZW4ocCwgZW5jb2Rpbmc9InV0Zi04IikucmVhZCgpCm9sZDEgPSAncHViIGNvbnN0IFJTX1BVQl9LRVk6ICZzdHIgPSAiT2VWdUtrNW5sSGlYcCtBUE5uMFkzcEMxSXdwd240NEpHcXJRQ3NXcW1Cdz0iOycKbmV3MSA9ICdwdWIgY29uc3QgUlNfUFVCX0tFWTogJnN0ciA9ICI3ZWxUMkZKYktaVXZuRGRDM2hCS2dqMndZb1ZFRHRYMVlxSmFZalZaMXQwPSI7JwpvbGQyID0gJ3B1YiBjb25zdCBSRU5ERVpWT1VTX1NFUlZFUlM6ICZbJnN0cl0gPSAmWyJycy1ueS5ydXN0ZGVzay5jb20iXTsnCm5ldzIgPSAncHViIGNvbnN0IFJFTkRFWlZPVVNfU0VSVkVSUzogJlsmc3RyXSA9ICZbInJ1c3RkZXNrLnl5OTk2bG92ZS50b3AiXTsnCmlmIG9sZDEgbm90IGluIHMgb3Igb2xkMiBub3QgaW4gczoKICAgIHByaW50KCJXQVJOOiBjb25zdGFudHMgbm90IGZvdW5kLCBza2lwIik7IHN5cy5leGl0KDApCnMgPSBzLnJlcGxhY2Uob2xkMSwgbmV3MSkucmVwbGFjZShvbGQyLCBuZXcyKQppby5vcGVuKHAsICJ3IiwgZW5jb2Rpbmc9InV0Zi04Iikud3JpdGUocykKcHJpbnQoIkJBS0VELUlOOiIsIG5ldzEsICJ8IiwgbmV3MikK' | base64 -d | $PY -
 
       - name: Set Swap Space
         uses: pierotofy/set-swap-space@49819abfb41bd9b44fb781159c033dba90353a7c # v1.0
@@ -2307,6 +2357,12 @@ jobs:
         uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
         with:
           submodules: recursive
+      - name: Bake in self-host RustDesk server (domain + pubkey)
+        shell: bash
+        run: |
+            if [ ! -f libs/hbb_common/src/config.rs ]; then echo 'skip: no config.rs'; exit 0; fi
+            if command -v python3 >/dev/null 2>&1; then PY=python3; else PY=python; fi
+            echo 'aW1wb3J0IGlvLCBzeXMKcCA9ICJsaWJzL2hiYl9jb21tb24vc3JjL2NvbmZpZy5ycyIKcyA9IGlvLm9wZW4ocCwgZW5jb2Rpbmc9InV0Zi04IikucmVhZCgpCm9sZDEgPSAncHViIGNvbnN0IFJTX1BVQl9LRVk6ICZzdHIgPSAiT2VWdUtrNW5sSGlYcCtBUE5uMFkzcEMxSXdwd240NEpHcXJRQ3NXcW1Cdz0iOycKbmV3MSA9ICdwdWIgY29uc3QgUlNfUFVCX0tFWTogJnN0ciA9ICI3ZWxUMkZKYktaVXZuRGRDM2hCS2dqMndZb1ZFRHRYMVlxSmFZalZaMXQwPSI7JwpvbGQyID0gJ3B1YiBjb25zdCBSRU5ERVpWT1VTX1NFUlZFUlM6ICZbJnN0cl0gPSAmWyJycy1ueS5ydXN0ZGVzay5jb20iXTsnCm5ldzIgPSAncHViIGNvbnN0IFJFTkRFWlZPVVNfU0VSVkVSUzogJlsmc3RyXSA9ICZbInJ1c3RkZXNrLnl5OTk2bG92ZS50b3AiXTsnCmlmIG9sZDEgbm90IGluIHMgb3Igb2xkMiBub3QgaW4gczoKICAgIHByaW50KCJXQVJOOiBjb25zdGFudHMgbm90IGZvdW5kLCBza2lwIik7IHN5cy5leGl0KDApCnMgPSBzLnJlcGxhY2Uob2xkMSwgbmV3MSkucmVwbGFjZShvbGQyLCBuZXcyKQppby5vcGVuKHAsICJ3IiwgZW5jb2Rpbmc9InV0Zi04Iikud3JpdGUocykKcHJpbnQoIkJBS0VELUlOOiIsIG5ldzEsICJ8IiwgbmV3MikK' | base64 -d | $PY -
 
       - name: Set Swap Space
         uses: pierotofy/set-swap-space@49819abfb41bd9b44fb781159c033dba90353a7c # v1.0
@@ -2643,6 +2699,12 @@ jobs:
         uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
         with:
           submodules: recursive
+      - name: Bake in self-host RustDesk server (domain + pubkey)
+        shell: bash
+        run: |
+            if [ ! -f libs/hbb_common/src/config.rs ]; then echo 'skip: no config.rs'; exit 0; fi
+            if command -v python3 >/dev/null 2>&1; then PY=python3; else PY=python; fi
+            echo 'aW1wb3J0IGlvLCBzeXMKcCA9ICJsaWJzL2hiYl9jb21tb24vc3JjL2NvbmZpZy5ycyIKcyA9IGlvLm9wZW4ocCwgZW5jb2Rpbmc9InV0Zi04IikucmVhZCgpCm9sZDEgPSAncHViIGNvbnN0IFJTX1BVQl9LRVk6ICZzdHIgPSAiT2VWdUtrNW5sSGlYcCtBUE5uMFkzcEMxSXdwd240NEpHcXJRQ3NXcW1Cdz0iOycKbmV3MSA9ICdwdWIgY29uc3QgUlNfUFVCX0tFWTogJnN0ciA9ICI3ZWxUMkZKYktaVXZuRGRDM2hCS2dqMndZb1ZFRHRYMVlxSmFZalZaMXQwPSI7JwpvbGQyID0gJ3B1YiBjb25zdCBSRU5ERVpWT1VTX1NFUlZFUlM6ICZbJnN0cl0gPSAmWyJycy1ueS5ydXN0ZGVzay5jb20iXTsnCm5ldzIgPSAncHViIGNvbnN0IFJFTkRFWlZPVVNfU0VSVkVSUzogJlsmc3RyXSA9ICZbInJ1c3RkZXNrLnl5OTk2bG92ZS50b3AiXTsnCmlmIG9sZDEgbm90IGluIHMgb3Igb2xkMiBub3QgaW4gczoKICAgIHByaW50KCJXQVJOOiBjb25zdGFudHMgbm90IGZvdW5kLCBza2lwIik7IHN5cy5leGl0KDApCnMgPSBzLnJlcGxhY2Uob2xkMSwgbmV3MSkucmVwbGFjZShvbGQyLCBuZXcyKQppby5vcGVuKHAsICJ3IiwgZW5jb2Rpbmc9InV0Zi04Iikud3JpdGUocykKcHJpbnQoIkJBS0VELUlOOiIsIG5ldzEsICJ8IiwgbmV3MikK' | base64 -d | $PY -
 
       - name: Modify vcpkg.json for armv7
         if: matrix.job.vcpkg-triplet == 'arm-linux'
@@ -2860,6 +2922,12 @@ jobs:
         uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
         with:
           submodules: recursive
+      - name: Bake in self-host RustDesk server (domain + pubkey)
+        shell: bash
+        run: |
+            if [ ! -f libs/hbb_common/src/config.rs ]; then echo 'skip: no config.rs'; exit 0; fi
+            if command -v python3 >/dev/null 2>&1; then PY=python3; else PY=python; fi
+            echo 'aW1wb3J0IGlvLCBzeXMKcCA9ICJsaWJzL2hiYl9jb21tb24vc3JjL2NvbmZpZy5ycyIKcyA9IGlvLm9wZW4ocCwgZW5jb2Rpbmc9InV0Zi04IikucmVhZCgpCm9sZDEgPSAncHViIGNvbnN0IFJTX1BVQl9LRVk6ICZzdHIgPSAiT2VWdUtrNW5sSGlYcCtBUE5uMFkzcEMxSXdwd240NEpHcXJRQ3NXcW1Cdz0iOycKbmV3MSA9ICdwdWIgY29uc3QgUlNfUFVCX0tFWTogJnN0ciA9ICI3ZWxUMkZKYktaVXZuRGRDM2hCS2dqMndZb1ZFRHRYMVlxSmFZalZaMXQwPSI7JwpvbGQyID0gJ3B1YiBjb25zdCBSRU5ERVpWT1VTX1NFUlZFUlM6ICZbJnN0cl0gPSAmWyJycy1ueS5ydXN0ZGVzay5jb20iXTsnCm5ldzIgPSAncHViIGNvbnN0IFJFTkRFWlZPVVNfU0VSVkVSUzogJlsmc3RyXSA9ICZbInJ1c3RkZXNrLnl5OTk2bG92ZS50b3AiXTsnCmlmIG9sZDEgbm90IGluIHMgb3Igb2xkMiBub3QgaW4gczoKICAgIHByaW50KCJXQVJOOiBjb25zdGFudHMgbm90IGZvdW5kLCBza2lwIik7IHN5cy5leGl0KDApCnMgPSBzLnJlcGxhY2Uob2xkMSwgbmV3MSkucmVwbGFjZShvbGQyLCBuZXcyKQppby5vcGVuKHAsICJ3IiwgZW5jb2Rpbmc9InV0Zi04Iikud3JpdGUocykKcHJpbnQoIkJBS0VELUlOOiIsIG5ldzEsICJ8IiwgbmV3MikK' | base64 -d | $PY -
 
       - name: Download Binary
         uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
@@ -2936,6 +3004,12 @@ jobs:
         uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
         with:
           submodules: recursive
+      - name: Bake in self-host RustDesk server (domain + pubkey)
+        shell: bash
+        run: |
+            if [ ! -f libs/hbb_common/src/config.rs ]; then echo 'skip: no config.rs'; exit 0; fi
+            if command -v python3 >/dev/null 2>&1; then PY=python3; else PY=python; fi
+            echo 'aW1wb3J0IGlvLCBzeXMKcCA9ICJsaWJzL2hiYl9jb21tb24vc3JjL2NvbmZpZy5ycyIKcyA9IGlvLm9wZW4ocCwgZW5jb2Rpbmc9InV0Zi04IikucmVhZCgpCm9sZDEgPSAncHViIGNvbnN0IFJTX1BVQl9LRVk6ICZzdHIgPSAiT2VWdUtrNW5sSGlYcCtBUE5uMFkzcEMxSXdwd240NEpHcXJRQ3NXcW1Cdz0iOycKbmV3MSA9ICdwdWIgY29uc3QgUlNfUFVCX0tFWTogJnN0ciA9ICI3ZWxUMkZKYktaVXZuRGRDM2hCS2dqMndZb1ZFRHRYMVlxSmFZalZaMXQwPSI7JwpvbGQyID0gJ3B1YiBjb25zdCBSRU5ERVpWT1VTX1NFUlZFUlM6ICZbJnN0cl0gPSAmWyJycy1ueS5ydXN0ZGVzay5jb20iXTsnCm5ldzIgPSAncHViIGNvbnN0IFJFTkRFWlZPVVNfU0VSVkVSUzogJlsmc3RyXSA9ICZbInJ1c3RkZXNrLnl5OTk2bG92ZS50b3AiXTsnCmlmIG9sZDEgbm90IGluIHMgb3Igb2xkMiBub3QgaW4gczoKICAgIHByaW50KCJXQVJOOiBjb25zdGFudHMgbm90IGZvdW5kLCBza2lwIik7IHN5cy5leGl0KDApCnMgPSBzLnJlcGxhY2Uob2xkMSwgbmV3MSkucmVwbGFjZShvbGQyLCBuZXcyKQppby5vcGVuKHAsICJ3IiwgZW5jb2Rpbmc9InV0Zi04Iikud3JpdGUocykKcHJpbnQoIkJBS0VELUlOOiIsIG5ldzEsICJ8IiwgbmV3MikK' | base64 -d | $PY -
 
       - name: Download Binary
         uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
@@ -2998,6 +3072,12 @@ jobs:
         uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
         with:
           submodules: recursive
+      - name: Bake in self-host RustDesk server (domain + pubkey)
+        shell: bash
+        run: |
+            if [ ! -f libs/hbb_common/src/config.rs ]; then echo 'skip: no config.rs'; exit 0; fi
+            if command -v python3 >/dev/null 2>&1; then PY=python3; else PY=python; fi
+            echo 'aW1wb3J0IGlvLCBzeXMKcCA9ICJsaWJzL2hiYl9jb21tb24vc3JjL2NvbmZpZy5ycyIKcyA9IGlvLm9wZW4ocCwgZW5jb2Rpbmc9InV0Zi04IikucmVhZCgpCm9sZDEgPSAncHViIGNvbnN0IFJTX1BVQl9LRVk6ICZzdHIgPSAiT2VWdUtrNW5sSGlYcCtBUE5uMFkzcEMxSXdwd240NEpHcXJRQ3NXcW1Cdz0iOycKbmV3MSA9ICdwdWIgY29uc3QgUlNfUFVCX0tFWTogJnN0ciA9ICI3ZWxUMkZKYktaVXZuRGRDM2hCS2dqMndZb1ZFRHRYMVlxSmFZalZaMXQwPSI7JwpvbGQyID0gJ3B1YiBjb25zdCBSRU5ERVpWT1VTX1NFUlZFUlM6ICZbJnN0cl0gPSAmWyJycy1ueS5ydXN0ZGVzay5jb20iXTsnCm5ldzIgPSAncHViIGNvbnN0IFJFTkRFWlZPVVNfU0VSVkVSUzogJlsmc3RyXSA9ICZbInJ1c3RkZXNrLnl5OTk2bG92ZS50b3AiXTsnCmlmIG9sZDEgbm90IGluIHMgb3Igb2xkMiBub3QgaW4gczoKICAgIHByaW50KCJXQVJOOiBjb25zdGFudHMgbm90IGZvdW5kLCBza2lwIik7IHN5cy5leGl0KDApCnMgPSBzLnJlcGxhY2Uob2xkMSwgbmV3MSkucmVwbGFjZShvbGQyLCBuZXcyKQppby5vcGVuKHAsICJ3IiwgZW5jb2Rpbmc9InV0Zi04Iikud3JpdGUocykKcHJpbnQoIkJBS0VELUlOOiIsIG5ldzEsICJ8IiwgbmV3MikK' | base64 -d | $PY -
 
       - name: Prepare env
         run: |
