@@ -8,10 +8,9 @@ permissions:
   actions: read
 
 jobs:
-  build:
-    strategy:
-      fail-fast: false
+  run-selfhost-build:
     uses: ./.github/workflows/flutter-build.yml
+    secrets: inherit
     with:
       upload-artifact: true
       upload-tag: "selfhost"
