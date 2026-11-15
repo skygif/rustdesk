@@ -3,10 +3,6 @@ name: Self-Host Build (baked-in server)
 on:
   workflow_dispatch:
 
-permissions:
-  contents: read
-  actions: read
-
 jobs:
   run-selfhost-build:
     uses: ./.github/workflows/flutter-build.yml
