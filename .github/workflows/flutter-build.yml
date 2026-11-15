@@ -12,6 +12,17 @@ on:
       publish-update-metadata:
         type: boolean
         default: false
+  workflow_dispatch:
+    inputs:
+      upload-artifact:
+        type: boolean
+        default: true
+      upload-tag:
+        type: string
+        default: "selfhost"
+      publish-update-metadata:
+        type: boolean
+        default: false
 
 # NOTE: F-Droid builder script 'flutter/build_fdroid.sh' reads environment
 # variables from this workflow!
